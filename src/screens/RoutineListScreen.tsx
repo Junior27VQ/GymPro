@@ -27,7 +27,7 @@ export default function RoutineListScreen({ navigation }: any) {
           <TouchableOpacity 
             style={styles.card}
             activeOpacity={0.8}
-            onPress={() => navigation.navigate('Detail')}
+            onPress={() => navigation.navigate('Detail', {rutina: item})}
           >
             <View style={styles.iconContainer}>
               <Ionicons name={item.icono as any} size={28} color="#2563EB" />

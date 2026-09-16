@@ -2,35 +2,70 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
-// Lista de ejercicios detallados para la rutina de pecho
-const EJERCICIOS_PECHO = [
-  { id: '1', nombre: 'Press de Banca Plano con Barra', series: '4 series', repeticiones: '8 - 10 reps', descanso: '90 seg' },
-  { id: '2', nombre: 'Press Inclinado con Mancuernas', series: '4 series', repeticiones: '10 - 12 reps', descanso: '60 seg' },
-  { id: '3', nombre: 'Aperturas en Polea Baja', series: '3 series', repeticiones: '12 - 15 reps', descanso: '60 seg' },
-  { id: '4', nombre: 'Fondos en Paralelas (Dips)', series: '3 series', repeticiones: 'Al fallo', descanso: '90 seg' },
-  { id: '5', nombre: 'Press declinado en máquina', series: '3 series', repeticiones: '12 reps', descanso: '60 seg' },
-];
+// Base de datos de ejercicios detallados para cada rutina según su ID
+const DETALLES_RUTINAS: Record<string, Array<{ id: string; nombre: string; series: string; repeticiones: string; descanso: string }>> = {
+  '1': [ // Pecho y Tríceps
+    { id: '1', nombre: 'Press de Banca Plano con Barra', series: '4 series', repeticiones: '8 - 10 reps', descanso: '90 seg' },
+    { id: '2', nombre: 'Press Inclinado con Mancuernas', series: '4 series', repeticiones: '10 - 12 reps', descanso: '60 seg' },
+    { id: '3', nombre: 'Aperturas en Polea Baja', series: '3 series', repeticiones: '12 - 15 reps', descanso: '60 seg' },
+    { id: '4', nombre: 'Fondos en Paralelas (Dips)', series: '3 series', repeticiones: 'Al fallo', descanso: '90 seg' },
+  ],
+  '2': [ // Pierna y Glúteo Completo
+    { id: '1', nombre: 'Sentadilla Libre con Barra', series: '4 series', repeticiones: '6 - 8 reps', descanso: '120 seg' },
+    { id: '2', nombre: 'Prensa Inclinada', series: '4 series', repeticiones: '10 - 12 reps', descanso: '90 seg' },
+    { id: '3', nombre: 'Peso Muerto Rumano', series: '3 series', repeticiones: '10 reps', descanso: '90 seg' },
+    { id: '4', nombre: 'Extensiones de Cuádriceps', series: '3 series', repeticiones: '15 reps', descanso: '60 seg' },
+  ],
+  '3': [ // Espalda y Bíceps
+    { id: '1', nombre: 'Dominadas o Jalón al Pecho', series: '4 series', repeticiones: '8 - 10 reps', descanso: '90 seg' },
+    { id: '2', nombre: 'Remo con Barra en T', series: '4 series', repeticiones: '8 - 10 reps', descanso: '90 seg' },
+    { id: '3', nombre: 'Remo Unilateral con Mancuerna', series: '3 series', repeticiones: '12 reps', descanso: '60 seg' },
+    { id: '4', nombre: 'Curl de Bíceps con Barra Z', series: '3 series', repeticiones: '10 - 12 reps', descanso: '60 seg' },
+  ],
+  '4': [ // Hombro y Abdomen
+    { id: '1', nombre: 'Press Militar con Barra', series: '4 series', repeticiones: '8 - 10 reps', descanso: '90 seg' },
+    { id: '2', nombre: 'Elevaciones Laterales con Mancuernas', series: '4 series', repeticiones: '12 - 15 reps', descanso: '60 seg' },
+    { id: '3', nombre: 'Encogimientos de Hombro (Trapecio)', series: '3 series', repeticiones: '12 reps', descanso: '60 seg' },
+    { id: '4', nombre: 'Elevación de Piernas Colgado', series: '3 series', repeticiones: 'Al fallo', descanso: '45 seg' },
+  ]
+};
 
-export default function ChestDetailScreen() {
+export default function ChestDetailScreen({ route }: any) {
+  // Recibimos los datos de la rutina seleccionada (con valores por defecto por seguridad)
+  const rutinaSeleccionada = route?.params?.rutina || {
+    id: '1',
+    titulo: 'Rutina de Pecho y Tríceps',
+    duracion: '45 min',
+    nivel: 'Intermedio',
+    icono: 'barbell-outline'
+  };
+
+  // Obtenemos los ejercicios correspondientes al ID de la rutina (si no existe, muestra pecho por defecto)
+  const listaEjercicios = DETALLES_RUTINAS[rutinaSeleccionada.id] || DETALLES_RUTINAS['1'];
+
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
       <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
         
-        {/* Banner Superior Informativo */}
+        {/* Banner Superior Dinámico con la información de la rutina seleccionada */}
         <View style={styles.banner}>
           <View style={styles.iconContainer}>
-            <Ionicons name="barbell" size={32} color="#2563EB" />
+            <Ionicons name={rutinaSeleccionada.icono || 'barbell'} size={32} color="#2563EB" />
           </View>
           <View style={styles.bannerTextContainer}>
-            <Text style={styles.bannerTitle}>Rutina de Pecho y Tríceps</Text>
-            <Text style={styles.bannerSubtitle}>Enfoque en hipertrofia, fuerza y definición</Text>
+            <Text style={styles.bannerTitle}>{rutinaSeleccionada.titulo}</Text>
+            <View style={styles.bannerSubRow}>
+              <Text style={styles.bannerSubtitle}>⏱ {rutinaSeleccionada.duracion}</Text>
+              <Text style={styles.dot}>•</Text>
+              <Text style={styles.bannerSubtitle}>⚡ {rutinaSeleccionada.nivel}</Text>
+            </View>
           </View>
         </View>
 
         <Text style={styles.sectionTitle}>Ejercicios de la Sesión</Text>
 
-        {/* Tarjetas de Ejercicios */}
-        {EJERCICIOS_PECHO.map((item, index) => (
+        {/* Tarjetas de Ejercicios dinámicos */}
+        {listaEjercicios.map((item, index) => (
           <View key={item.id} style={styles.card}>
             <View style={styles.cardHeader}>
               <Text style={styles.exerciseNumber}>#{index + 1}</Text>
@@ -95,14 +130,22 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   bannerTitle: {
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#0F172A',
+    marginBottom: 4,
+  },
+  bannerSubRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   bannerSubtitle: {
     fontSize: 12,
     color: '#64748B',
-    marginTop: 2,
+  },
+  dot: {
+    marginHorizontal: 6,
+    color: '#CBD5E1',
   },
   sectionTitle: {
     fontSize: 16,
