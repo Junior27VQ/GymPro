@@ -4,8 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import 'react-native-gesture-handler';
-import TabNavigator from './src/navigators/TabNavigator';
-import DrawerNavigator from './src/navigators/DrawerNAvigator';
+import DrawerNavigator from './src/navigators/DrawerNav';
 
 export type RootStackParamList = { 
   MinDarwer: undefined,
@@ -19,7 +18,7 @@ export default function App() {
       <Stack.Navigator>
         <Stack.Screen
           name='MinDarwer'
-          component={TabNavigator}
+          component={DrawerNavigator}
           options={{headerShown: false}}
         />
       </Stack.Navigator>
