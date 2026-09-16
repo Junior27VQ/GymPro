@@ -39,3 +39,8 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# AI Assistant local files
+.claude/
+AGENTS.md
+CLAUD.md
