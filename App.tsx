@@ -5,6 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import 'react-native-gesture-handler';
 import TabNavigator from './src/navigators/TabNavigator';
+import DrawerNavigator from './src/navigators/DrawerNAvigator';
 
 export type RootStackParamList = { 
   MinDarwer: undefined,
