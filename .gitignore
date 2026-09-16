@@ -43,4 +43,4 @@ yarn-error.*
 # AI Assistant local files
 .claude/
 AGENTS.md
-CLAUD.md
+CLAUDE.md
