@@ -10,16 +10,28 @@ export default function TabNavigator(){
         <Tab.Navigator screenOptions={({route})=> ({
           headerShown: false,
           tabBarIcon: ({focused, color, size})=> {
-            let IonName: any = 'List';
+            let IonName: keyof typeof Ionicons.glyphMap = 'list-outline';
             if(route.name === 'Progreso'){
-              IonName = focused? 'bonfire' : 'bonfire-outline'
+              IonName = focused ? 'stats-chart' : 'stats-chart-outline';
             } else if(route.name === 'Rutina'){
-              IonName = focused? 'barbell' : 'barbell-outline'
+              IonName = focused ? 'barbell' : 'barbell-outline';
             }
             return <Ionicons name={IonName} size={size} color={color}/>
           },
-          tabBarActiveTintColor: 'rgba(10, 39, 206, 0.4)',
-          tabBarInactiveTintColor: 'rgba(48, 48, 59, 0.4)'
+          tabBarActiveTintColor: '#2563EB',
+          tabBarInactiveTintColor: '#94A3B8',
+          tabBarStyle: {
+            backgroundColor: '#FFFFFF',
+            borderTopWidth: 1,
+            borderTopColor: '#E2E8F0',
+            height: 60,
+            paddingBottom: 8,
+            paddingTop: 6,
+          },
+          tabBarLabelStyle: {
+            fontSize: 12,
+            fontWeight: '600',
+          },
         })}>
           <Tab.Screen
             name="Progreso"
