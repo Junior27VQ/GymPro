@@ -6,16 +6,18 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import 'react-native-gesture-handler';
 import DrawerNavigator from './src/navigators/DrawerNav';
 import ChestDetailScreen from './src/screens/ChestDetailScreen';
+import { RoutineProvider } from './src/context/RoutineContext';
 
 export type RootStackParamList = { 
   MinDrawer: undefined,
-  Detail: { rutina: { id: string; titulo: string; duracion: string; nivel: string; icono: string }}
+  Detail: { id?: string | undefined }
 }
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
   return (
-    <NavigationContainer>
+    <RoutineProvider>
+      <NavigationContainer>
       <Stack.Navigator initialRouteName='MinDrawer'>
         <Stack.Screen
           name='MinDrawer'
@@ -29,6 +31,7 @@ export default function App() {
         />
       </Stack.Navigator>
     </NavigationContainer>
+    </RoutineProvider>
   );
 }
 

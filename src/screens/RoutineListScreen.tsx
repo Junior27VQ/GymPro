@@ -9,6 +9,7 @@ import { RootStackParamList } from '../../App';
 
 // IMPORTAMOS el tipo directamente desde el TabNavigator para no repetirlo
 import { TabParamList } from '../navigators/TabNavigator'; // Ajusta la ruta según tu carpeta
+import { useRoutine } from '../context/RoutineContext';
 
 // Creamos el tipado compuesto oficial usando el tipo importado
 type Props = CompositeScreenProps<
@@ -25,43 +26,43 @@ const RUTINAS = [
 ];
 
 export default function RoutineListScreen({ navigation }: Props) {
+  const {routines, deleteRoutine} = useRoutine();
+
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
       <View style={styles.headerContainer}>
         <Text style={styles.headerTitle}>Entrenamientos</Text>
         <Text style={styles.headerSubtitle}>Selecciona una rutina para hoy</Text>
-        <Button
-          title='comenzar entrenamiento'
-          onPress={()=> Alert.alert('Alerta', 'Comenzar entrenamiento')}
-        />
+        
       </View>
 
       <FlatList
-        data={RUTINAS}
+        data={routines}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
-          <TouchableOpacity 
-            style={styles.card}
-            activeOpacity={0.8}
-            onPress={() => navigation.navigate('Detail', {rutina: item})}
-          >
-            <View style={styles.iconContainer}>
-              <Ionicons name={item.icono as any} size={28} color="#2563EB" />
-            </View>
-            
+          <View>
             <View style={styles.cardContent}>
-              <Text style={styles.cardTitle}>{item.titulo}</Text>
+              <Text style={styles.cardTitle}>{item.name}</Text>
               <View style={styles.infoRow}>
-                <Text style={styles.infoText}>⏱ {item.duracion}</Text>
+                <Text style={styles.infoText}>⚡ {item.muscleGroup}</Text>
                 <Text style={styles.dot}>•</Text>
-                <Text style={styles.infoText}>⚡ {item.nivel}</Text>
+                <Text style={styles.infoText}>⏱ {item.duration}</Text>
               </View>
             </View>
-
-            <Ionicons name="chevron-forward" size={20} color="#94A3B8" />
-          </TouchableOpacity>
+            <View>
+              <TouchableOpacity onPress={()=> navigation.navigate('Detail', {id: item.id})} >
+                <Ionicons name="pencil" size={24} color="#FF9800" />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={()=> navigation.navigate('Detail', {id: item.id})} >
+                <Ionicons name="eye" size={24} color="#2e69a0" />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={()=> deleteRoutine(item.id)} >
+                <Ionicons name="trash" size={24} color="#be114b" />
+              </TouchableOpacity>
+            </View>
+          </View>
         )}
       />
     </SafeAreaView>

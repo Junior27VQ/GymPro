@@ -3,6 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
+import { useRoutine } from '../context/RoutineContext';
 
 // Base de datos de ejercicios detallados para cada rutina según su ID
 const DETALLES_RUTINAS: Record<string, Array<{ id: string; nombre: string; series: string; repeticiones: string; descanso: string }>> = {
@@ -35,17 +36,14 @@ const DETALLES_RUTINAS: Record<string, Array<{ id: string; nombre: string; serie
 type Props = NativeStackScreenProps<RootStackParamList, 'Detail'>;
 
 export default function ChestDetailScreen({ route }: Props) {
+  const idToView = route.params?.id;
+  const {routines} = useRoutine();
   // Recibimos los datos de la rutina seleccionada (con valores por defecto por seguridad)
-  const rutinaSeleccionada = route?.params?.rutina || {
-    id: '1',
-    titulo: 'Rutina de Pecho y Tríceps',
-    duracion: '45 min',
-    nivel: 'Intermedio',
-    icono: 'barbell-outline'
-  };
+  const rutinaSeleccionada = routines.find(p=> p.id === idToView);
+  if(!routines) return <Text>Producto no encontrado</Text>
 
   // Obtenemos los ejercicios correspondientes al ID de la rutina (si no existe, muestra pecho por defecto)
-  const listaEjercicios = DETALLES_RUTINAS[rutinaSeleccionada.id] || DETALLES_RUTINAS['1'];
+  const listaEjercicios = DETALLES_RUTINAS['1'];
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
@@ -54,14 +52,14 @@ export default function ChestDetailScreen({ route }: Props) {
         {/* Banner Superior Dinámico con la información de la rutina seleccionada */}
         <View style={styles.banner}>
           <View style={styles.iconContainer}>
-            <Ionicons id={rutinaSeleccionada.icono || 'barbell'} size={32} color="#2563EB" />
+            <Ionicons id={rutinaSeleccionada?.name || 'barbell'} size={32} color="#2563EB" />
           </View>
           <View style={styles.bannerTextContainer}>
-            <Text style={styles.bannerTitle}>{rutinaSeleccionada.titulo}</Text>
+            <Text style={styles.bannerTitle}>⚡{rutinaSeleccionada?.muscleGroup}</Text>
             <View style={styles.bannerSubRow}>
-              <Text style={styles.bannerSubtitle}>⏱ {rutinaSeleccionada.duracion}</Text>
+              <Text style={styles.bannerSubtitle}>⏱ {rutinaSeleccionada?.duration}</Text>
               <Text style={styles.dot}>•</Text>
-              <Text style={styles.bannerSubtitle}>⚡ {rutinaSeleccionada.nivel}</Text>
+              <Text style={styles.bannerSubtitle}>{rutinaSeleccionada?.createdAt}</Text>
             </View>
           </View>
         </View>
