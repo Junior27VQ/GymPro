@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert, Button } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -8,7 +8,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 
 // IMPORTAMOS el tipo directamente desde el TabNavigator para no repetirlo
-import { TabParamList } from '../navigators/TabNavigator'; // Ajusta la ruta según tu carpeta
+import { TabParamList } from '../navigators/TabNavigator'; 
 import { useRoutine } from '../context/RoutineContext';
 
 // Creamos el tipado compuesto oficial usando el tipo importado
@@ -17,23 +17,24 @@ type Props = CompositeScreenProps<
   NativeStackScreenProps<RootStackParamList>
 >;
 
-// Datos de ejemplo para simular rutinas de gimnasio
-const RUTINAS = [
-  { id: '1', titulo: 'Rutina de Pecho y Tríceps', duracion: '45 min', nivel: 'Intermedio', icono: 'barbell-outline' },
-  { id: '2', titulo: 'Pierna y Glúteo Completo', duracion: '60 min', nivel: 'Avanzado', icono: 'fitness-outline' },
-  { id: '3', titulo: 'Espalda y Bíceps', duracion: '50 min', nivel: 'Intermedio', icono: 'body-outline' },
-  { id: '4', titulo: 'Hombro y Abdomen', duracion: '40 min', nivel: 'Principiante', icono: 'flash-outline' },
-];
-
 export default function RoutineListScreen({ navigation }: Props) {
-  const {routines, deleteRoutine} = useRoutine();
+  const { routines, deleteRoutine } = useRoutine();
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
+      {/* Header con título y botón de agregar */}
       <View style={styles.headerContainer}>
-        <Text style={styles.headerTitle}>Entrenamientos</Text>
-        <Text style={styles.headerSubtitle}>Selecciona una rutina para hoy</Text>
-        
+        <View style={styles.headerTextContainer}>
+          <Text style={styles.headerTitle}>Entrenamientos</Text>
+          <Text style={styles.headerSubtitle}>Selecciona una rutina para hoy</Text>
+        </View>
+        <TouchableOpacity
+          style={styles.addButtonHeader}
+          activeOpacity={0.8}
+          onPress={() => navigation.navigate('AddRoutine', { id: undefined })}
+        >
+          <Ionicons name="add" size={24} color="#FFFFFF" />
+        </TouchableOpacity>
       </View>
 
       <FlatList
@@ -42,24 +43,38 @@ export default function RoutineListScreen({ navigation }: Props) {
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
-          <View>
+          <View style={styles.card}>
+            {/* Contenido principal de la rutina */}
             <View style={styles.cardContent}>
               <Text style={styles.cardTitle}>{item.name}</Text>
               <View style={styles.infoRow}>
                 <Text style={styles.infoText}>⚡ {item.muscleGroup}</Text>
                 <Text style={styles.dot}>•</Text>
-                <Text style={styles.infoText}>⏱ {item.duration}</Text>
+                <Text style={styles.infoText}>⏱ {item.duration} min</Text>
               </View>
             </View>
-            <View>
-              <TouchableOpacity onPress={()=> navigation.navigate('Detail', {id: item.id})} >
-                <Ionicons name="pencil" size={24} color="#FF9800" />
+
+            {/* Botones de acción alineados a la derecha */}
+            <View style={styles.actionButtonsContainer}>
+              <TouchableOpacity 
+                style={styles.actionButton} 
+                onPress={() => navigation.navigate('AddRoutine', { id: item.id })}
+              >
+                <Ionicons name="pencil" size={20} color="#F59E0B" />
               </TouchableOpacity>
-              <TouchableOpacity onPress={()=> navigation.navigate('Detail', {id: item.id})} >
-                <Ionicons name="eye" size={24} color="#2e69a0" />
+
+              <TouchableOpacity 
+                style={styles.actionButton} 
+                onPress={() => navigation.navigate('Detail', { id: item.id })}
+              >
+                <Ionicons name="eye" size={20} color="#2563EB" />
               </TouchableOpacity>
-              <TouchableOpacity onPress={()=> deleteRoutine(item.id)} >
-                <Ionicons name="trash" size={24} color="#be114b" />
+
+              <TouchableOpacity 
+                style={styles.actionButton} 
+                onPress={() => deleteRoutine(item.id)}
+              >
+                <Ionicons name="trash" size={20} color="#EF4444" />
               </TouchableOpacity>
             </View>
           </View>
@@ -69,18 +84,23 @@ export default function RoutineListScreen({ navigation }: Props) {
   );
 }
 
-// ... tus estilos se quedan exactamente igual ...
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F8FAFC',
   },
   headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 16,
     backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
     borderBottomColor: '#E2E8F0',
+  },
+  headerTextContainer: {
+    flex: 1,
   },
   headerTitle: {
     fontSize: 24,
@@ -92,6 +112,19 @@ const styles = StyleSheet.create({
     color: '#64748B',
     marginTop: 4,
   },
+  addButtonHeader: {
+    backgroundColor: '#2563EB',
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#2563EB',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
   listContainer: {
     padding: 16,
   },
@@ -99,25 +132,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
-    borderRadius: 12,
+    borderRadius: 14,
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
     borderColor: '#E2E8F0',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: { ios: 0.05, android: 0.1 } as any,
+    shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 2,
-  },
-  iconContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#EFF6FF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 14,
   },
   cardContent: {
     flex: 1,
@@ -139,5 +163,19 @@ const styles = StyleSheet.create({
   dot: {
     marginHorizontal: 6,
     color: '#CBD5E1',
+  },
+  actionButtonsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginLeft: 10,
+  },
+  actionButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 8,
+    backgroundColor: '#F1F5F9',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
