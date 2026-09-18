@@ -32,18 +32,30 @@ const DETALLES_RUTINAS: Record<string, Array<{ id: string; nombre: string; serie
     { id: '4', nombre: 'Elevación de Piernas Colgado', series: '3 series', repeticiones: 'Al fallo', descanso: '45 seg' },
   ]
 };
+
 // Definimos el tipo exacto para las props de esta pantalla
 type Props = NativeStackScreenProps<RootStackParamList, 'Detail'>;
 
-export default function ChestDetailScreen({ route }: Props) {
+export default function RoutineDetailScreen({ route }: Props) {
   const idToView = route.params?.id;
-  const {routines} = useRoutine();
-  // Recibimos los datos de la rutina seleccionada (con valores por defecto por seguridad)
-  const rutinaSeleccionada = routines.find(p=> p.id === idToView);
-  if(!routines) return <Text>Producto no encontrado</Text>
+  const { routines } = useRoutine();
+  
+  // Buscamos la rutina seleccionada en el contexto global
+  const rutinaSeleccionada = routines.find(p => p.id === idToView);
 
-  // Obtenemos los ejercicios correspondientes al ID de la rutina (si no existe, muestra pecho por defecto)
-  const listaEjercicios = DETALLES_RUTINAS['1'];
+  // Validación por si la rutina no es encontrada
+  if (!rutinaSeleccionada) {
+    return (
+      <SafeAreaView style={styles.centerContainer}>
+        <Text style={styles.errorText}>Rutina no encontrada</Text>
+      </SafeAreaView>
+    );
+  }
+
+  // Obtenemos los ejercicios según el ID (Usamos 'idToView!' para asegurar a TypeScript que ya fue validado)
+  const listaEjercicios = DETALLES_RUTINAS[idToView!] || [
+    { id: 'default-1', nombre: 'Ejercicio libre / En desarrollo', series: '3 series', repeticiones: '10 reps', descanso: '60 seg' }
+  ];
 
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
@@ -52,14 +64,15 @@ export default function ChestDetailScreen({ route }: Props) {
         {/* Banner Superior Dinámico con la información de la rutina seleccionada */}
         <View style={styles.banner}>
           <View style={styles.iconContainer}>
-            <Ionicons id={rutinaSeleccionada?.name || 'barbell'} size={32} color="#2563EB" />
+            <Ionicons name="barbell" size={32} color="#2563EB" />
           </View>
           <View style={styles.bannerTextContainer}>
-            <Text style={styles.bannerTitle}>⚡{rutinaSeleccionada?.muscleGroup}</Text>
+            <Text style={styles.bannerTitle}>{rutinaSeleccionada.name}</Text>
+            <Text style={styles.bannerMuscle}>⚡ {rutinaSeleccionada.muscleGroup}</Text>
             <View style={styles.bannerSubRow}>
-              <Text style={styles.bannerSubtitle}>⏱ {rutinaSeleccionada?.duration}</Text>
+              <Text style={styles.bannerSubtitle}>⏱ {rutinaSeleccionada.duration} min</Text>
               <Text style={styles.dot}>•</Text>
-              <Text style={styles.bannerSubtitle}>{rutinaSeleccionada?.createdAt}</Text>
+              <Text style={styles.bannerSubtitle}>Creada: {rutinaSeleccionada.createdAt}</Text>
             </View>
           </View>
         </View>
@@ -101,6 +114,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F8FAFC',
   },
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F8FAFC',
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#64748B',
+    fontWeight: '600',
+  },
   scrollContainer: {
     padding: 16,
   },
@@ -135,6 +159,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#0F172A',
+    marginBottom: 2,
+  },
+  bannerMuscle: {
+    fontSize: 13,
+    color: '#2563EB',
+    fontWeight: '600',
     marginBottom: 4,
   },
   bannerSubRow: {
@@ -191,6 +221,7 @@ const styles = StyleSheet.create({
   },
   detailsRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 8,
   },
   detailBadge: {

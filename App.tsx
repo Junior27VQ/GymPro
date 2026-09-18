@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import 'react-native-gesture-handler';
 import DrawerNavigator from './src/navigators/DrawerNav';
-import ChestDetailScreen from './src/screens/ChestDetailScreen';
+import RoutineDetailScreen from './src/screens/RoutineDetailScreen';
 import { RoutineProvider } from './src/context/RoutineContext';
 import AddRoutineScreen from './src/screens/AddRoutineScreen';
 
@@ -26,7 +26,7 @@ export default function App() {
         />
         <Stack.Screen
           name='Detail'
-          component={ChestDetailScreen}
+          component={RoutineDetailScreen}
           options={{title:'Detalles'}}
         />
         <Stack.Screen
