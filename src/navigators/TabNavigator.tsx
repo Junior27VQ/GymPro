@@ -3,7 +3,14 @@ import { Ionicons } from "@expo/vector-icons";
 import ProgressScreen from "../screens/ProgressScreen";
 import RoutineListScreen from "../screens/RoutineListScreen";
 
-const Tab = createBottomTabNavigator();
+// Define aquí mismo tu tipado de tabs o impórtalo
+export type TabParamList = {
+  Progreso: undefined;
+  Rutina: undefined;
+};
+
+// Agrégale <TabParamList> aquí:
+const Tab = createBottomTabNavigator<TabParamList>();
 
 export default function TabNavigator(){
     return (

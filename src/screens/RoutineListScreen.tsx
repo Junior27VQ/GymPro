@@ -1,6 +1,20 @@
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert, Button } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+
+import { CompositeScreenProps } from '@react-navigation/native';
+import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../App';
+
+// IMPORTAMOS el tipo directamente desde el TabNavigator para no repetirlo
+import { TabParamList } from '../navigators/TabNavigator'; // Ajusta la ruta según tu carpeta
+
+// Creamos el tipado compuesto oficial usando el tipo importado
+type Props = CompositeScreenProps<
+  BottomTabScreenProps<TabParamList, 'Rutina'>,
+  NativeStackScreenProps<RootStackParamList>
+>;
 
 // Datos de ejemplo para simular rutinas de gimnasio
 const RUTINAS = [
@@ -10,12 +24,16 @@ const RUTINAS = [
   { id: '4', titulo: 'Hombro y Abdomen', duracion: '40 min', nivel: 'Principiante', icono: 'flash-outline' },
 ];
 
-export default function RoutineListScreen({ navigation }: any) {
+export default function RoutineListScreen({ navigation }: Props) {
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
       <View style={styles.headerContainer}>
         <Text style={styles.headerTitle}>Entrenamientos</Text>
         <Text style={styles.headerSubtitle}>Selecciona una rutina para hoy</Text>
+        <Button
+          title='comenzar entrenamiento'
+          onPress={()=> Alert.alert('Alerta', 'Comenzar entrenamiento')}
+        />
       </View>
 
       <FlatList
@@ -50,6 +68,7 @@ export default function RoutineListScreen({ navigation }: any) {
   );
 }
 
+// ... tus estilos se quedan exactamente igual ...
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -84,7 +103,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderWidth: 1,
     borderColor: '#E2E8F0',
-    // Sombra sutil para iOS y Android
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: { ios: 0.05, android: 0.1 } as any,

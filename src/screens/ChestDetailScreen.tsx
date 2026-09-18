@@ -1,6 +1,8 @@
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../App';
 
 // Base de datos de ejercicios detallados para cada rutina según su ID
 const DETALLES_RUTINAS: Record<string, Array<{ id: string; nombre: string; series: string; repeticiones: string; descanso: string }>> = {
@@ -29,8 +31,10 @@ const DETALLES_RUTINAS: Record<string, Array<{ id: string; nombre: string; serie
     { id: '4', nombre: 'Elevación de Piernas Colgado', series: '3 series', repeticiones: 'Al fallo', descanso: '45 seg' },
   ]
 };
+// Definimos el tipo exacto para las props de esta pantalla
+type Props = NativeStackScreenProps<RootStackParamList, 'Detail'>;
 
-export default function ChestDetailScreen({ route }: any) {
+export default function ChestDetailScreen({ route }: Props) {
   // Recibimos los datos de la rutina seleccionada (con valores por defecto por seguridad)
   const rutinaSeleccionada = route?.params?.rutina || {
     id: '1',
@@ -50,7 +54,7 @@ export default function ChestDetailScreen({ route }: any) {
         {/* Banner Superior Dinámico con la información de la rutina seleccionada */}
         <View style={styles.banner}>
           <View style={styles.iconContainer}>
-            <Ionicons name={rutinaSeleccionada.icono || 'barbell'} size={32} color="#2563EB" />
+            <Ionicons id={rutinaSeleccionada.icono || 'barbell'} size={32} color="#2563EB" />
           </View>
           <View style={styles.bannerTextContainer}>
             <Text style={styles.bannerTitle}>{rutinaSeleccionada.titulo}</Text>

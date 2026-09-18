@@ -8,17 +8,17 @@ import DrawerNavigator from './src/navigators/DrawerNav';
 import ChestDetailScreen from './src/screens/ChestDetailScreen';
 
 export type RootStackParamList = { 
-  MinDarwer: undefined,
-  Detail: undefined
+  MinDrawer: undefined,
+  Detail: { rutina: { id: string; titulo: string; duracion: string; nivel: string; icono: string }}
 }
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName='MinDarwer'>
+      <Stack.Navigator initialRouteName='MinDrawer'>
         <Stack.Screen
-          name='MinDarwer'
+          name='MinDrawer'
           component={DrawerNavigator}
           options={{headerShown: false}}
         />
