@@ -4,38 +4,51 @@ import { useRoutine } from "../context/RoutineContext";
 
 export default function AddRoutineScreen({ navigation, route }: any) {
     const { routines, addRoutine, updateRoutine } = useRoutine();
-    const idToEdit = route.params?.id;
     
-    const [name, setName] = useState('');
-    const [muscleGroup, setMuscleGroup] = useState('');
+    // Convertimos el parámetro de la ruta a número de manera segura
+    const idToEdit = route.params?.id ? Number(route.params.id) : undefined;
+    
+    const [nombre, setNombre] = useState('');
+    const [grupoMuscular, setGrupoMuscular] = useState('');
     const [durationString, setDurationString] = useState('');
     
     useEffect(() => {
         if (idToEdit) {
             const routineFound = routines.find(p => p.id === idToEdit);
-            if (routineFound) {                    
-                setName(routineFound.name);
-                setMuscleGroup(routineFound.muscleGroup);
-                setDurationString(routineFound.duration.toString());
+            if (routineFound) {                
+                setNombre(routineFound.nombre);
+                setGrupoMuscular(routineFound.grupoMuscular);
+                setDurationString(routineFound.duracion.toString());
             }
         }
-    }, [idToEdit]);
+    }, [idToEdit, routines]);
 
     const handleSave = () => {
-        if (!name || !durationString) {
-            Alert.alert('Error', 'Faltan datos requeridos');
+        // Validar que los campos obligatorios no estén vacíos
+        if (!nombre.trim() || !grupoMuscular.trim() || !durationString.trim()) {
+            Alert.alert('Error', 'Todos los campos son obligatorios');
             return;
         }
-        const durationNumber = parseFloat(durationString);
-        if (isNaN(durationNumber)) {
+
+        // Validar que la duración sea un número válido
+        const duracionNumber = Number(durationString);
+        if (isNaN(duracionNumber)) {
             Alert.alert('Error', 'La duración debe ser un número válido');
             return; 
         }
-        if (idToEdit) {
-            updateRoutine(idToEdit, { name, muscleGroup, duration: durationNumber });
-        } else {
-            addRoutine({ name, muscleGroup, duration: durationNumber });
+
+        // Validar que la duración esté estrictamente entre 10 y 180 minutos
+        if (duracionNumber < 10 || duracionNumber > 180) {
+            Alert.alert('Error de validación', 'La duración de la rutina debe estar entre 10 y 180 minutos.');
+            return;
         }
+
+        if (idToEdit) {
+            updateRoutine(idToEdit, { nombre, grupoMuscular, duracion: duracionNumber });
+        } else {
+            addRoutine({ nombre, grupoMuscular, duracion: duracionNumber, featured: false });
+        }
+        
         navigation.goBack();
     };
 
@@ -47,8 +60,8 @@ export default function AddRoutineScreen({ navigation, route }: any) {
                     style={styles.input}
                     placeholder="Ej. Pecho y Tríceps Intenso"
                     placeholderTextColor="#94A3B8"
-                    value={name}
-                    onChangeText={setName}
+                    value={nombre}
+                    onChangeText={setNombre}
                 />
 
                 <Text style={styles.label}>Grupo Muscular</Text>
@@ -56,8 +69,8 @@ export default function AddRoutineScreen({ navigation, route }: any) {
                     style={styles.input}
                     placeholder="Ej. Pecho, Tríceps, Piernas..."
                     placeholderTextColor="#94A3B8"
-                    value={muscleGroup}
-                    onChangeText={setMuscleGroup}
+                    value={grupoMuscular}
+                    onChangeText={setGrupoMuscular}
                 />
 
                 <Text style={styles.label}>Duración (minutos)</Text>

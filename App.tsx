@@ -8,8 +8,8 @@ import AddRoutineScreen from './src/screens/AddRoutineScreen';
 
 export type RootStackParamList = { 
   MinDrawer: undefined,
-  Detail: { id?: string },
-  AddRoutine: {id?: string }
+  Detail: { id?: number },
+  AddRoutine: {id?: number }
 }
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
