@@ -1,92 +1,116 @@
+import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-
-// Datos de ejemplo para el historial de progreso
-const HISTORIAL_PESO = [
-  { id: '1', fecha: '10 Sep 2026', peso: '78.5 kg', cambio: '-0.5 kg', estado: 'down' },
-  { id: '2', fecha: '03 Sep 2026', peso: '79.0 kg', cambio: '-0.2 kg', estado: 'down' },
-  { id: '3', fecha: '27 Ago 2026', peso: '79.2 kg', cambio: '+0.1 kg', estado: 'up' },
-  { id: '4', fecha: '20 Ago 2026', peso: '79.1 kg', cambio: '-0.8 kg', estado: 'down' },
-];
+import { useRoutine } from '../context/RoutineContext';
 
 export default function ProgressScreen() {
+  const { routines } = useRoutine();
+
+  // Total de rutinas
+  const totalRutinas = routines.length;
+  
+  // Duración total y promedio
+  const minutosTotales = routines.reduce((acc, curr) => acc + (Number(curr.duracion) || 0), 0);
+  const duracionPromedio = totalRutinas > 0 ? Math.round(minutosTotales / totalRutinas) : 0;
+
+  // Grupo muscular con mayor cantidad de rutinas
+  let grupoFrecuente = 'Ninguno';
+  if (totalRutinas > 0) {
+    const conteoGrupos: { [key: string]: number } = {};
+    routines.forEach(r => {
+      const grupo = r.grupoMuscular ? r.grupoMuscular.trim() : 'General';
+      conteoGrupos[grupo] = (conteoGrupos[grupo] || 0) + 1;
+    });
+
+    let maxCount = 0;
+    for (const [grupo, count] of Object.entries(conteoGrupos)) {
+      if (count > maxCount) {
+        maxCount = count;
+        grupoFrecuente = grupo;
+      }
+    }
+  }
+
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
       <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
         
-        {/* Título de la sección */}
         <View style={styles.headerTitleContainer}>
           <Text style={styles.headerTitle}>Tu Progreso</Text>
-          <Text style={styles.headerSubtitle}>Monitorea tus cambios físicos y metas</Text>
+          <Text style={styles.headerSubtitle}>Resumen analítico basado en tu base de datos SQLite</Text>
         </View>
 
-        {/* Tarjetas de Estadísticas Principales (Grid 2x2) */}
         <View style={styles.statsGrid}>
           <View style={styles.statCard}>
             <View style={[styles.statIconContainer, { backgroundColor: '#EFF6FF' }]}>
-              <Ionicons name="scale-outline" size={24} color="#2563EB" />
+              <Ionicons name="barbell-outline" size={24} color="#2563EB" />
             </View>
-            <Text style={styles.statValue}>78.5 kg</Text>
-            <Text style={styles.statLabel}>Peso Actual</Text>
+            <Text style={styles.statValue}>{totalRutinas}</Text>
+            <Text style={styles.statLabel}>Total de Rutinas</Text>
           </View>
 
           <View style={styles.statCard}>
             <View style={[styles.statIconContainer, { backgroundColor: '#F0FDF4' }]}>
-              <Ionicons name="flame-outline" size={24} color="#16A34A" />
+              <Ionicons name="time-outline" size={24} color="#16A34A" />
             </View>
-            <Text style={styles.statValue}>15.2%</Text>
-            <Text style={styles.statLabel}>Grasa Corporal</Text>
+            <Text style={styles.statValue}>{minutosTotales} min</Text>
+            <Text style={styles.statLabel}>Duración Total</Text>
           </View>
 
           <View style={styles.statCard}>
             <View style={[styles.statIconContainer, { backgroundColor: '#FEF2F2' }]}>
-              <Ionicons name="trending-down" size={24} color="#DC2626" />
+              <Ionicons name="stats-chart-outline" size={24} color="#DC2626" />
             </View>
-            <Text style={styles.statValue}>-3.5 kg</Text>
-            <Text style={styles.statLabel}>Meta Alcanzada</Text>
+            <Text style={styles.statValue}>{duracionPromedio} min</Text>
+            <Text style={styles.statLabel}>Duración Promedio</Text>
           </View>
 
           <View style={styles.statCard}>
             <View style={[styles.statIconContainer, { backgroundColor: '#FAF5FF' }]}>
-              <Ionicons name="fitness-outline" size={24} color="#9333EA" />
+              <Ionicons name="trophy-outline" size={24} color="#9333EA" />
             </View>
-            <Text style={styles.statValue}>18 Días</Text>
-            <Text style={styles.statLabel}>Constancia</Text>
+            <Text style={styles.statValue} numberOfLines={1}>{grupoFrecuente}</Text>
+            <Text style={styles.statLabel}>Grupo Principal</Text>
           </View>
         </View>
 
-        {/* Sección de Historial */}
-        <Text style={styles.sectionTitle}>Historial de Peso</Text>
+        <Text style={styles.sectionTitle}>Historial y Persistencia (SQLite)</Text>
 
-        {HISTORIAL_PESO.map((item) => (
-          <View key={item.id} style={styles.historyCard}>
-            <View style={styles.historyLeft}>
-              <View style={styles.calendarIconContainer}>
-                <Ionicons name="calendar-outline" size={20} color="#64748B" />
-              </View>
-              <View>
-                <Text style={styles.historyDate}>{item.fecha}</Text>
-                <Text style={styles.historySubText}>Registro semanal</Text>
-              </View>
-            </View>
-
-            <View style={styles.historyRight}>
-              <Text style={styles.historyWeight}>{item.peso}</Text>
-              <View style={[
-                styles.badgeChange, 
-                { backgroundColor: item.estado === 'down' ? '#F0FDF4' : '#FEF2F2' }
-              ]}>
-                <Text style={[
-                  styles.badgeText, 
-                  { color: item.estado === 'down' ? '#16A34A' : '#DC2626' }
-                ]}>
-                  {item.cambio}
-                </Text>
-              </View>
-            </View>
+        {routines.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>No hay rutinas registradas aún. Agrega una para ver el resumen.</Text>
           </View>
-        ))}
+        ) : (
+          routines.map((item) => (
+            <View key={item.id} style={styles.historyCard}>
+              <View style={styles.historyLeft}>
+                <View style={styles.calendarIconContainer}>
+                  <Ionicons name="fitness" size={20} color="#64748B" />
+                </View>
+                <View>
+                  <Text style={styles.historyDate}>{item.nombre}</Text>
+                  <Text style={styles.historySubText}>Enfoque: {item.grupoMuscular}</Text>
+                </View>
+              </View>
+
+              <View style={styles.historyRight}>
+                <Text style={styles.historyWeight}>{item.duracion} min</Text>
+                <View style={[
+                  styles.badgeChange, 
+                  { backgroundColor: item.featured ? '#FEF08A' : '#F1F5F9' }
+                ]}>
+                  <Text style={[
+                    styles.badgeText, 
+                    { color: item.featured ? '#854D0E' : '#64748B' }
+                  ]}>
+                    {item.featured ? 'Destacada' : 'Normal'}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          ))
+        )}
 
       </ScrollView>
     </SafeAreaView>
@@ -172,6 +196,7 @@ const styles = StyleSheet.create({
   historyLeft: {
     flexDirection: 'row',
     alignItems: 'center',
+    flex: 1,
   },
   calendarIconContainer: {
     width: 38,
@@ -209,5 +234,14 @@ const styles = StyleSheet.create({
   badgeText: {
     fontSize: 11,
     fontWeight: '700',
+  },
+  emptyContainer: {
+    padding: 20,
+    alignItems: 'center',
+  },
+  emptyText: {
+    color: '#94A3B8',
+    fontSize: 14,
+    textAlign: 'center',
   },
 });

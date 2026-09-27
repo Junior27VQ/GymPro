@@ -10,9 +10,9 @@ export const initDatabase = () => {
                 nombre TEXT NOT NULL,
                 grupoMuscular TEXT NOT NULL,
                 duracion INTEGER NOT NULL,
-                featured INTEGER DEFULT 0
-                );    
-        `);
+                featured INTEGER DEFAULT 0
+                );
+            `);
         console.log('Base de datos inicializada correctamente con SQLite.');
     } catch (error) {
         console.error('Error al inicializar la base de datos:', error);
